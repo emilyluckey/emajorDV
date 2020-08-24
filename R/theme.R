@@ -68,7 +68,7 @@ emajor_themeBar <- function(){
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples none
 emajor_theme <- function(baseplot,bar_col){
   deparse(substitute(baseplot)) -> name #原底圖的名稱
   paste0(name,"_m") -> name_m #新的名稱
