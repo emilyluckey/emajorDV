@@ -4,3 +4,5 @@
 #   internal = T,
 #   overwrite = T
 # )
+
+# devtools::install("/Users/martin/Github/emajorDV", build_vignettes = T)
