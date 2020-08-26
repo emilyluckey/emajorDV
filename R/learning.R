@@ -1,5 +1,5 @@
 filename="/Users/martin/Github/civic_and_social_data_visualization/template/homeworkExhibition/homeworkexhibition.Rmd"
-
+courseUrl="https://hackmd.io/@fnik77ehTXKTYsEGmxLihA/B11UEyEXv"
 library(dplyr)
 library(tidyr)
 library(lubridate)
@@ -7,7 +7,8 @@ learningMaterial = tibble(
   filename=basename(filename),
   date=today(),
   topics="資料視覺展示平台：資料視覺化課程展示範例",
-  filepath=filename
+  filepath=filename,
+  url=courseUrl
 )
 
 #' List available course materials
@@ -29,6 +30,7 @@ list_courses <- function(){
 #' @param number An integer. represents the row number from list_courses()
 #' @param date A character in YYYY-MM-DD format represent the date of the course in list_courses()
 #' @param destfolder A character, path to save the material, default=getwd()
+#' @param openUrl. A logical. T= open course URL if there is any. (defaul=T)
 #'
 #' @return
 #' @export
@@ -40,7 +42,7 @@ list_courses <- function(){
 #' get_courseMaterial(date="2020-08-26")
 #' get_courseMaterial(nubmer=1, destfolder="/user")
 #'
-get_courseMaterial <- function(number=NULL, date=NULL, destfolder=getwd()){
+get_courseMaterial <- function(number=NULL, date=NULL, destfolder=getwd(), openUrl=T){
   if(is.null(number)){
     learningMaterial %>%
       filter(
@@ -51,7 +53,21 @@ get_courseMaterial <- function(number=NULL, date=NULL, destfolder=getwd()){
     learningMaterial[number, ]
   }-> courseSelected
 
-  dataToFile(courseSelected, destfolder)
+  dataToFile(courseSelected, destfolder, openUrl)
+}
+
+browseCourseUrl <- function(number=NULL, date=NULL){
+  if(is.null(number)){
+    learningMaterial %>%
+      filter(
+        date==lubridate::ymd(date)
+      )
+    return()
+  } else {
+    learningMaterial[number, ]
+  }-> courseSelected
+
+  browseURL(courseSelected$url[[1]])
 }
 
 #' generate EMajor learning service
@@ -77,8 +93,26 @@ textToData = function(filename){
   assign(dataName, readLines(filename))
   dataObj <- rlang::sym(dataName)
   load("R/sysdata.rda") -> existingObjects
-  allObjectnames <- c(existingObjects,
-                  dataName)
+  allObjectnames <- unique(
+    c(existingObjects,
+      dataName))
+  allObjects <- rlang::syms(allObjectnames)
+  todo <-
+    rlang::expr({
+      usethis::use_data(!!!allObjects, internal=T, overwrite = T)
+    })
+  rlang::eval_tidy(todo)
+}
+
+addInternalData <- function(dataObj){
+  dataObj <- rlang::enquo(dataObj)
+  dataName <- rlang::as_name(dataObj)
+  load("R/sysdata.rda") -> existingObjects
+  todo0 <- rlang::expr(!!dataObj)
+  assign(rlang::as_name(dataObj),rlang::eval_tidy(todo0))
+  allObjectnames <- unique(
+    c(existingObjects,
+      dataName))
   allObjects <- rlang::syms(allObjectnames)
   todo <-
     rlang::expr({
@@ -89,7 +123,7 @@ textToData = function(filename){
 
 # courseSelected <- get_courseMaterial(1)
 # destfolder=getwd()
-dataToFile = function(courseSelected, destfolder){
+dataToFile = function(courseSelected, destfolder, openUrl){
   for(.x in seq_along(courseSelected$filename)){
     courseSelected$filename[[.x]] -> filename
 
@@ -112,6 +146,9 @@ dataToFile = function(courseSelected, destfolder){
     file.edit(
       savedfile
     )
+    if(courseSelected$url[[.x]] !="" && openUrl){
+      browseURL(courseSelected$url[[.x]])
+    }
 
   }
 

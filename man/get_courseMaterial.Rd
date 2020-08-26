@@ -4,7 +4,12 @@
 \alias{get_courseMaterial}
 \title{Get course material based on list_courses}
 \usage{
-get_courseMaterial(number = NULL, date = NULL, destfolder = getwd())
+get_courseMaterial(
+  number = NULL,
+  date = NULL,
+  destfolder = getwd(),
+  openUrl = T
+)
 }
 \arguments{
 \item{number}{An integer. represents the row number from list_courses()}
@@ -12,6 +17,8 @@ get_courseMaterial(number = NULL, date = NULL, destfolder = getwd())
 \item{date}{A character in YYYY-MM-DD format represent the date of the course in list_courses()}
 
 \item{destfolder}{A character, path to save the material, default=getwd()}
+
+\item{openUrl.}{A logical. T= open course URL if there is any. (defaul=T)}
 }
 \value{
 
