@@ -47,11 +47,10 @@ get_courseMaterial <- function(number=NULL, date=NULL, destfolder=getwd(), openU
     learningMaterial %>%
       filter(
         date==lubridate::ymd(date)
-      )
-    return()
+      ) -> courseSelected
   } else {
-    learningMaterial[number, ]
-  }-> courseSelected
+    learningMaterial[number, ] -> courseSelected
+  }
 
   dataToFile(courseSelected, destfolder, openUrl)
 }

@@ -1,0 +1,54 @@
+---
+title: "作業展示"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    orientation: columns
+    vertical_layout: fill
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(emajorDV)
+# If any error, run the next command
+# remotes::install_github("emajortaiwan/emajorDV", build_vignettes = T, force=T)
+```
+
+```{css}
+object {
+  height: 100%;
+  width: auto;
+}
+#id {
+  background-image: url(image.svg);
+}
+.bgImg1 {
+  background-image: url('../img/gg_economicGrowthBtwTwAnd3.svg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+```
+
+
+### `r emajorDV::insertSVG("../img/gg_economicGrowthBtwTwAnd3.svg")` 
+
+```{r}
+emajorDV::insertSVG("../img/gg_economicGrowthBtwTwAnd3.svg")
+```
+
+
+### `r emajorDV::insertSVG("../img/gg_taiwanBusinessCyclesWithLights2.svg")`
+
+```{r}
+emajorDV::insertSVG("../img/gg_taiwanBusinessCyclesWithLights2.svg")
+
+```
+
+### `r emajorDV::insertSVG("../img/gg_GDPRank_base3.svg")`
+
+```{r}
+emajorDV::insertSVG("../img/gg_GDPRank_base3.svg")
+
+```
+
