@@ -80,6 +80,7 @@ emajorService <- function(){
   service <- new.env(parent=globalenv())
   service$list_courses <- list_courses
   service$get_courseMaterial <- get_courseMaterial
+  service$browseCourseUrl <- browseCourseUrl
   service
 }
 
