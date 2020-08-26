@@ -60,11 +60,10 @@ browseCourseUrl <- function(number=NULL, date=NULL){
     learningMaterial %>%
       filter(
         date==lubridate::ymd(date)
-      )
-    return()
+      )-> courseSelected
   } else {
-    learningMaterial[number, ]
-  }-> courseSelected
+    learningMaterial[number, ]-> courseSelected
+  }
 
   browseURL(courseSelected$url[[1]])
 }
