@@ -2,6 +2,7 @@
 
 export(clip_planWrapper)
 export(create_planRmd)
+export(create_snapshot)
 export(emajorService)
 export(emajor_example)
 export(emajor_grid_composite)
