@@ -46,7 +46,7 @@ serveTheLastModified <- function(path="."){
   paste0("http://", host,":",port,html2open) -> url0
   browseURL(url0)
 }
-#' Add JS html to the end of body
+#' Add JS html to the end of body to the latest modified html
 #'
 #' @param jsfile A character. The file path of your html js file
 #' @param path A character. The path to your latest modified html file
