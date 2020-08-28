@@ -46,6 +46,34 @@ serveTheLastModified <- function(path="."){
   with(out, paste0("http://", host,":",port,html2open)) -> url0
   browseURL(url0)
 }
+#' Add JS html to the end of body
+#'
+#' @param jsfile A character. The file path of your html js file
+#' @param path A character. The path to your latest modified html file
+#'
+#' @return
+#' @export
+#'
+#' @examples none
+addjs <- function(jsfile, path="."){
+  jsHtml <- readLines(
+    jsfile
+  )
+  list.files(path=path,pattern=".html$", full.names = T) -> allHtmls
+  file.info(allHtmls) -> allHtmlsInfo
+  with(allHtmlsInfo, which(mtime==max(mtime)))-> loc_theLatest
+  newHtml <- allHtmlsInfo[[loc_theLatest]]
+  readLines(newHtml) -> newHtmlLines
+  stringr::str_which(newHtmlLines) -> loc_bodyEnd
+  revisedHtml <- c(newHtmlLines[1:(loc_bodyEnd-1)],
+  jsHtml,
+  newHtml[-(1:(loc_bodyEnd-1))])
+  writeLines(
+    revisedHtml,
+    con=newHtml
+  )
+}
+
 
 #' Create web service
 #'
@@ -58,5 +86,6 @@ webService <- function(){
   service$serveTheLastModified <- serveTheLastModified
   service$create_jqueryPage <- create_jqueryPage
   service$browse_last <- servr::browse_last
+  service$addjs <- addjs
   service
 }
