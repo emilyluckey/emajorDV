@@ -14,3 +14,6 @@ create_jqueryPage()
 Create a jquery experiemtal index page with body content from the copy of
  a webpage inspection element
 }
+\examples{
+none
+}
