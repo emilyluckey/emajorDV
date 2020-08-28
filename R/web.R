@@ -62,7 +62,7 @@ addjs <- function(jsfile, path="."){
   list.files(path=path,pattern=".html$", full.names = T) -> allHtmls
   file.info(allHtmls) -> allHtmlsInfo
   with(allHtmlsInfo, which(mtime==max(mtime)))-> loc_theLatest
-  newHtml <- allHtmlsInfo[[loc_theLatest]]
+  newHtml <- allHtmls[[loc_theLatest]]
   readLines(newHtml) -> newHtmlLines
   stringr::str_which(newHtmlLines) -> loc_bodyEnd
   revisedHtml <- c(newHtmlLines[1:(loc_bodyEnd-1)],
