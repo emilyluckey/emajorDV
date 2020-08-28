@@ -43,7 +43,7 @@ serveTheLastModified <- function(path="."){
   with(allHtmlsInfo, which(mtime==max(mtime)))-> loc_theLatest
   stringr::str_remove(allHtmls[[loc_theLatest]],
                       glue::glue("^(.|{rootPath})")) -> html2open
-  with(out, paste0("http://", host,":",port,html2open)) -> url0
+  paste0("http://", host,":",port,html2open) -> url0
   browseURL(url0)
 }
 #' Add JS html to the end of body
