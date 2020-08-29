@@ -86,7 +86,7 @@ activeRmd_KnitAddJsServe <- function(){
   rmarkdown::render(activeRmd)
   knitr::knit_params(readLines(activeRmd)) -> params0
   jsfile <- ifelse(
-    str_detect(params0$after_body$value,"^\\."),
+    stringr::str_detect(params0$after_body$value,"^\\."),
     params0$after_body$value,
     file.path(dirname(activeRmd),params0$after_body$value)
   )
