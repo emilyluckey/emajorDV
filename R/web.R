@@ -129,7 +129,13 @@ serveActiveRmdRenderedHTML <- function(webRoot=NULL){
   stringr::str_replace(basename(activeRmd),"[rR]md$","html")-> html2open
   file.path("http://", paste0(host,":",port),html2open) -> url0
 
-  browseURL(url0)
+  sessionInfo() -> info
+  if(stringr::str_detect(info$running,"[mM][aA][cC]")){
+    system(glue::glue('open -a "Google Chrome" {url0}'))
+  } else {
+    browseURL(url0)
+  }
+
 }
 
 #' Add JS to the Active Rmd's
