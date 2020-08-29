@@ -91,7 +91,7 @@ activeRmd_KnitAddJsServe <- function(){
     file.path(dirname(activeRmd),params0$after_body$value)
   )
 
-  addJs2Latest(params0$after_body$value, path=dirname(activeRmd))
+  addJs2Latest(jsfile, path=dirname(activeRmd))
   serveActiveRmdRenderedHTML()
 }
 
