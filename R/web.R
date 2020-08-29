@@ -103,7 +103,6 @@ activeRmd_KnitAddJsServe <- function(){
 #'
 #' @examples none
 serveActiveRmdRenderedHTML <- function(webRoot=NULL){
-  rootPath <- normalizePath(webRoot)
   if(length(servr::daemon_list())!=0){
     servr::daemon_stop()
   }
