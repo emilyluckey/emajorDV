@@ -2,7 +2,7 @@
 
 export(activeRmd_KnitAddJsServe)
 export(addJs2ActiveRmdKnitServe)
-export(addJs2Latest)
+export(addJsHtml2Latest)
 export(clip_planWrapper)
 export(create_jqueryPage)
 export(create_planRmd)

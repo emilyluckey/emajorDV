@@ -55,7 +55,7 @@ serveTheLastModified <- function(path="."){
 #' @export
 #'
 #' @examples none
-addJs2Latest <- function(jsfile, path="."){
+addJsHtml2Latest <- function(jsfile, path="."){
   jsHtml <- readLines(
     jsfile
   )
@@ -91,7 +91,7 @@ activeRmd_KnitAddJsServe <- function(){
     file.path(dirname(activeRmd),params0$after_body$value)
   )
 
-  addJs2Latest(jsfile, path=dirname(activeRmd))
+  addJsHtml2Latest(jsfile, path=dirname(activeRmd))
   serveActiveRmdRenderedHTML()
 }
 
@@ -163,7 +163,8 @@ webService <- function(){
   service$serveTheLastModified <- serveTheLastModified
   service$create_jqueryPage <- create_jqueryPage
   service$browse_last <- servr::browse_last
-  service$addJs2Latest <- addJs2Latest
+  service$addJsHtml2Latest <- addJsHtml2Lateste
+  service$addJs2ActiveRmdKnitServe <- addJs2ActiveRmdKnitServe
   service$serveActiveRmdRenderedHTML <- serveActiveRmdRenderedHTML
   service$activeRmd_KnitAddJsServe <- activeRmd_KnitAddJsServe
   service
