@@ -5,12 +5,8 @@
 #'
 #' @examples none
 webmagic <- function(){
-  activeRmd <- rstudioapi::getSourceEditorContext()
-  activeRmd$id -> id
-  readLines(activeRmd$path) -> contextLines
-  stringr::str_which(contextLines, '^---') -> loc_frontmatters
-  rstudioapi::document_position(loc_frontmatters[[2]]+1,1) -> insertPosition
-  rstudioapi::insertText(insertPosition,webserveText,id=id)
+  clean()
+  make(magicplan)
 }
 # addInternalData(webserveText)
 
