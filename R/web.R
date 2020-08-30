@@ -159,7 +159,7 @@ addJs2ActiveRmdKnitServe <- function(){
 #'
 #' @examples none
 webService <- function(){
-  service <- new.env(parent=globalenv())
+  service <- list() #new.env(parent=globalenv())
   service$serveTheLastModified <- serveTheLastModified
   service$create_jqueryPage <- create_jqueryPage
   service$browse_last <- servr::browse_last
