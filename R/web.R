@@ -163,7 +163,7 @@ webService <- function(){
   service$serveTheLastModified <- serveTheLastModified
   service$create_jqueryPage <- create_jqueryPage
   service$browse_last <- servr::browse_last
-  service$addJsHtml2Latest <- addJsHtml2Lateste
+  service$addJsHtml2Latest <- addJsHtml2Latest
   service$addJs2ActiveRmdKnitServe <- addJs2ActiveRmdKnitServe
   service$serveActiveRmdRenderedHTML <- serveActiveRmdRenderedHTML
   service$activeRmd_KnitAddJsServe <- activeRmd_KnitAddJsServe
