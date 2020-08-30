@@ -1,12 +1,11 @@
-#' Insert R chunk in Rmd for JS ex post injection and serve
+#' Have web serve R chunk in your clipboard for you to paste
 #'
 #' @return
 #' @export
 #'
 #' @examples none
-webmagic <- function(){
-  drake::clean()
-  drake::make(magicplan)
+copyServeChunk <- function(){
+  clipr::write_clip(webserveText)
 }
 # addInternalData(webserveText)
 
@@ -179,5 +178,6 @@ webService <- function(){
   service$addJs2LatestHtmlServe <- addJs2LatestHtmlServe
   service$serveActiveRmdRenderedHTML <- serveActiveRmdRenderedHTML
   service$activeRmd_KnitAddJsServe <- activeRmd_KnitAddJsServe
+  service$copyServeChunk <- copyServeChunk
   service
 }
