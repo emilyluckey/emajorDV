@@ -144,7 +144,7 @@ serveActiveRmdRenderedHTML <- function(webRoot=NULL){
 #' @export
 #'
 #' @examples none
-addJs2ActiveRmdKnitServe <- function(){
+addJs2LatestHtmlServe <- function(){
   rstudioapi::getSourceEditorContext() -> activeSource
   activeSource$path -> activeRmd
   knitr::knit_params(readLines(activeRmd)) -> params
@@ -164,7 +164,7 @@ webService <- function(){
   service$create_jqueryPage <- create_jqueryPage
   service$browse_last <- servr::browse_last
   service$addJsHtml2Latest <- addJsHtml2Latest
-  service$addJs2ActiveRmdKnitServe <- addJs2ActiveRmdKnitServe
+  service$addJs2LatestHtmlServe <- addJs2LatestHtmlServe
   service$serveActiveRmdRenderedHTML <- serveActiveRmdRenderedHTML
   service$activeRmd_KnitAddJsServe <- activeRmd_KnitAddJsServe
   service
