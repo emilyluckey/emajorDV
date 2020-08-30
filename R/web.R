@@ -5,8 +5,8 @@
 #'
 #' @examples none
 webmagic <- function(){
-  clean()
-  make(magicplan)
+  drake::clean()
+  drake::make(magicplan)
 }
 # addInternalData(webserveText)
 
