@@ -1,3 +1,19 @@
+#' Insert R chunk in Rmd for JS ex post injection and serve
+#'
+#' @return
+#' @export
+#'
+#' @examples none
+webmagic <- function(){
+  activeRmd <- rstudioapi::getSourceEditorContext()
+  activeRmd$id -> id
+  readLines(activeRmd$path) -> contextLines
+  stringr::str_which(contextLines, '^---') -> loc_frontmatters
+  rstudioapi::document_position(loc_frontmatters[[2]]+1,1) -> insertPosition
+  rstudioapi::insertText(insertPosition,webserveText,id=id)
+}
+# addInternalData(webserveText)
+
 #' Create a jquery experiemtal index page with body content from the copy of
 #'  a webpage inspection element
 #'
@@ -148,7 +164,7 @@ addJs2LatestHtmlServe <- function(){
   rstudioapi::getSourceEditorContext() -> activeSource
   activeSource$path -> activeRmd
   knitr::knit_params(readLines(activeRmd)) -> params
-  addJs2Latest(params$after_body$value)
+  addJsHtml2Latest(params$after_body$value)
   serveActiveRmdRenderedHTML()
 }
 

@@ -32,3 +32,27 @@ macService <- function(){
 }
 
 
+#' Add object to internal package data
+#'
+#' @param dataObj An object
+#'
+#' @return
+#' @export
+#'
+#' @examples none
+addInternalData <- function(dataObj){
+  dataObj <- rlang::enquo(dataObj)
+  dataName <- rlang::as_name(dataObj)
+  load("R/sysdata.rda") -> existingObjects
+  todo0 <- rlang::expr(!!dataObj)
+  assign(rlang::as_name(dataObj),rlang::eval_tidy(todo0))
+  allObjectnames <- unique(
+    c(existingObjects,
+      dataName))
+  allObjects <- rlang::syms(allObjectnames)
+  todo <-
+    rlang::expr({
+      usethis::use_data(!!!allObjects, internal=T, overwrite = T)
+    })
+  rlang::eval_tidy(todo)
+}
