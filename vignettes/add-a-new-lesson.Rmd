@@ -1,0 +1,38 @@
+---
+title: "Add a new lesson"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Add a new lesson}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(emajorDV)
+```
+
+# Set up new lesson
+
+```{r}
+newlesson <- create_lessonTemplate()
+newlesson$topic <- "new lesson2"
+newlesson$description <- "An example2"
+newlesson$date <- "2020-09-01"
+newlesson$downloadUrl <- list(
+  list("https::/github.com", zip=F)
+)
+```
+
+# Add lesson
+
+```{r}
+add_lesson(newlesson)
+```
+

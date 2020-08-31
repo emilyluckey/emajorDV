@@ -18,30 +18,90 @@ create_lessonTemplate <- function(){
 #'
 #' @examples none
 add_lesson <- function(newlesson){
-  # courseList ={ # obtain course list
-  #   jsonlite::fromJSON(
-  #     readLines("./course_info/courseList.json")
-  #   )
-  # }
-  httr::GET("https://emajortaiwan.github.io/home/course_info/courseList.json")-> response
-  httr::content(response) -> courseList
+
+  github.token = {
+    httr::oauth2.0_token(
+      httr::oauth_endpoints("github"),
+      httr::oauth_app(
+        "EMajor courses",
+        key="0ece2f021066b9583c8d",
+        secret = "b8e0700fe7f7ca262693fb77e1e2a2059016b3ac"
+      ),
+      scope="repo"
+    ) -> github.token
+    github.token
+  }
+
+  endpoint <- "https://api.github.com"
+  headerExpr <- rlang::expr({
+    add_headers(
+      Accept="application/vnd.github.v3+json"
+    )
+  })
+
+  owner <- "emajortaiwan"
+  repo <- "home"
+
+  fileSha = {
+    path <- "course_info"
+    resource <- "/repos/{owner}/{repo}/contents/{path}"
+    httr::GET(
+      url=file.path(endpoint, glue::glue(resource), fsep=""),
+      rlang::eval_tidy(headerExpr),
+      config=config(
+        token=github.token
+      )
+    ) -> course_info
+    content(course_info) -> course_info
+    purrr::keep(course_info, ~{.x$name=="courseList.json"}) -> courseListJson
+    courseListJson[[1]]$sha -> fileSha
+    fileSha
+  }
+
+
+  courseList = {
+    httr::GET("https://emajortaiwan.github.io/home/course_info/courseList.json")-> response
+    httr::content(response) -> courseList
+    courseList
+  }
+
   newlessonComplete = { # create new lesson
     newlessonComplete <- lessonTemplate
     newlessonComplete[names(newlesson)] <- newlesson
     newlessonComplete
   }
 
-  updateCourseList ={ # update course list
+  courseJson ={ # update course list
     length(courseList) -> tot
     courseList[[tot+1]] <- newlessonComplete
     jsonlite::toJSON(courseList,
                      auto_unbox = T) -> jsonOut
-    writeLines(jsonOut,con="courseList.json")
-    courseList
+    jsonOut
+    # writeLines(jsonOut,con="courseList.json")
+    # courseList
   }
-  invisible(updateCourseList)
-}
 
+
+  githubUpdate = {
+    path <- "course_info/courseList.json"
+    resource <- "/repos/{owner}/{repo}/contents/{path}"
+    httr::PUT(
+      url=file.path(endpoint, glue::glue(resource), fsep=""),
+      rlang::eval_tidy(headerExpr),
+      config=config(
+        token=github.token
+      ),
+      body = list(
+        message=newlesson$topic,
+        sha= fileSha,
+        content=openssl::base64_encode(jsonOut)
+      ),
+      encode="json"
+    ) -> response
+    content(response)
+  }
+  invisible(githubUpdate)
+}
 # lesson2 <- create_lessonTemplate()
 # lesson2$topic="Knit and Twist: How to Inject Your JS in Rmd Properly"
 # lesson2$date=lubridate::today()
