@@ -1,15 +1,52 @@
-filename="/Users/martin/Github/civic_and_social_data_visualization/template/homeworkExhibition/homeworkexhibition.Rmd"
-courseUrl="https://hackmd.io/@fnik77ehTXKTYsEGmxLihA/B11UEyEXv"
-library(dplyr)
-library(tidyr)
-library(lubridate)
-learningMaterial = tibble(
-  filename=basename(filename),
-  date=today(),
-  topics="資料視覺展示平台：資料視覺化課程展示範例",
-  filepath=filename,
-  url=courseUrl
-)
+#' Create a lesson template
+#'
+#' @description Use this to create a list object with each element named for the detail of a lesson that can be used to fill in so to be used as an input for add_lesson() function
+#' @return A list with names
+#' @export
+#'
+#' @examples newlesson <- create_lessonTemplate()
+create_lessonTemplate <- function(){
+  lessonTemplate
+}
+
+#' Add a new lesson
+#'
+#' @param newlesson A list create by filling up lessonTemplate
+#'
+#' @return
+#' @export
+#'
+#' @examples none
+add_lesson <- function(newlesson){
+  # courseList ={ # obtain course list
+  #   jsonlite::fromJSON(
+  #     readLines("./course_info/courseList.json")
+  #   )
+  # }
+  httr::GET("https://emajortaiwan.github.io/home/course_info/courseList.json")-> response
+  httr::content(response) -> courseList
+  newlessonComplete = { # create new lesson
+    newlessonComplete <- lessonTemplate
+    newlessonComplete[names(newlesson)] <- newlesson
+    newlessonComplete
+  }
+
+  updateCourseList ={ # update course list
+    length(courseList) -> tot
+    courseList[[tot+1]] <- newlessonComplete
+    jsonlite::toJSON(courseList,
+                     auto_unbox = T) -> jsonOut
+    writeLines(jsonOut,con="courseList.json")
+    courseList
+  }
+  invisible(updateCourseList)
+}
+
+# lesson2 <- create_lessonTemplate()
+# lesson2$topic="Knit and Twist: How to Inject Your JS in Rmd Properly"
+# lesson2$date=lubridate::today()
+#
+# add_lesson(lesson2) -> updateLessons
 
 #' List available course materials
 #'
@@ -43,6 +80,12 @@ list_courses <- function(){
 #' get_courseMaterial(nubmer=1, destfolder="/user")
 #'
 get_courseMaterial <- function(number=NULL, date=NULL, destfolder=getwd(), openUrl=T){
+  library(httr)
+  GET(
+    url="https://emajortaiwan.github.io/home/course_info/courseList.json"
+  ) -> response
+  content(response) -> response_content
+
   if(is.null(number)){
     learningMaterial %>%
       filter(
@@ -103,22 +146,6 @@ textToData = function(filename){
   rlang::eval_tidy(todo)
 }
 
-addInternalData <- function(dataObj){
-  dataObj <- rlang::enquo(dataObj)
-  dataName <- rlang::as_name(dataObj)
-  load("R/sysdata.rda") -> existingObjects
-  todo0 <- rlang::expr(!!dataObj)
-  assign(rlang::as_name(dataObj),rlang::eval_tidy(todo0))
-  allObjectnames <- unique(
-    c(existingObjects,
-      dataName))
-  allObjects <- rlang::syms(allObjectnames)
-  todo <-
-    rlang::expr({
-      usethis::use_data(!!!allObjects, internal=T, overwrite = T)
-    })
-  rlang::eval_tidy(todo)
-}
 
 # courseSelected <- get_courseMaterial(1)
 # destfolder=getwd()
