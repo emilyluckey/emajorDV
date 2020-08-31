@@ -34,7 +34,7 @@ add_lesson <- function(newlesson){
 
   endpoint <- "https://api.github.com"
   headerExpr <- rlang::expr({
-    add_headers(
+    httr::add_headers(
       Accept="application/vnd.github.v3+json"
     )
   })
@@ -48,11 +48,11 @@ add_lesson <- function(newlesson){
     httr::GET(
       url=file.path(endpoint, glue::glue(resource), fsep=""),
       rlang::eval_tidy(headerExpr),
-      config=config(
+      config=httr::config(
         token=github.token
       )
     ) -> course_info
-    content(course_info) -> course_info
+    httr::content(course_info) -> course_info
     purrr::keep(course_info, ~{.x$name=="courseList.json"}) -> courseListJson
     courseListJson[[1]]$sha -> fileSha
     fileSha
@@ -88,7 +88,7 @@ add_lesson <- function(newlesson){
     httr::PUT(
       url=file.path(endpoint, glue::glue(resource), fsep=""),
       rlang::eval_tidy(headerExpr),
-      config=config(
+      config=httr::config(
         token=github.token
       ),
       body = list(
@@ -98,7 +98,7 @@ add_lesson <- function(newlesson){
       ),
       encode="json"
     ) -> response
-    content(response)
+    httr::content(response)
   }
   invisible(githubUpdate)
 }
