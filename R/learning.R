@@ -265,7 +265,8 @@ dataToFile = function(courseSelected, destfolder, openUrl){
     )
     rstudioapi::selectFile(
       caption="Select a file to open:",
-      path=finalDestPath)
+      path=finalDestPath) -> fileSelected
+    file.edit(fileSelected)
 
     if(oneCourse$onlineUrl !="" && openUrl){
       url0 <- oneCourse$onlineUrl
