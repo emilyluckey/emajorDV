@@ -56,3 +56,13 @@ addInternalData <- function(dataObj){
     })
   rlang::eval_tidy(todo)
 }
+
+#' Browse EMajor homepage
+#'
+#' @return
+#' @export
+#'
+#' @examples emajorhome()
+emajorhome <- function(){
+  browseURL("https://emajortaiwan.github.io/home/")
+}
