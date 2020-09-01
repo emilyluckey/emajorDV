@@ -68,6 +68,7 @@ add_lesson <- function(newlesson){
   newlessonComplete = { # create new lesson
     newlessonComplete <- lessonTemplate
     newlessonComplete[names(newlesson)] <- newlesson
+    newlessonComplete$id=ids::random_id()
     newlessonComplete
   }
 
@@ -204,6 +205,8 @@ emajorService <- function(){
   service$list_courses <- list_courses
   service$get_courseMaterial <- get_courseMaterial
   service$browseCourseUrl <- browseCourseUrl
+  service$create_lessonTemplate <- create_lessonTemplate
+  add_lesson -> service$add_lesson
   service
 }
 
