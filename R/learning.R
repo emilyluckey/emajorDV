@@ -115,11 +115,24 @@ add_lesson <- function(newlesson){
 #'
 #' @examples none
 list_courses <- function(){
-  learningMaterial %>%
-    select(
-      -filepath
+  courseJson <- get_courseListJson()
+  courseList <-
+    purrr::map(
+      courseJson,
+      ~.x[c("topic","description","date")]
     )
-
+  purrr::map_dfr(
+    courseList,
+    ~within(
+      .x,
+      {
+        topic=ifelse(length(topic)==0,"",topic)
+        description=ifelse(length(description)==0,"",description)
+        date=ifelse(length(date)==0,"",date)
+      }
+    )
+  ) -> df_courseList
+  df_courseList
 }
 
 #' Get course material based on list_courses
@@ -140,35 +153,44 @@ list_courses <- function(){
 #' get_courseMaterial(nubmer=1, destfolder="/user")
 #'
 get_courseMaterial <- function(number=NULL, date=NULL, destfolder=getwd(), openUrl=T){
-  library(httr)
-  GET(
+  httr::GET(
     url="https://emajortaiwan.github.io/home/course_info/courseList.json"
   ) -> response
-  content(response) -> response_content
+  httr::content(response) -> response_content
 
   if(is.null(number)){
-    learningMaterial %>%
-      filter(
-        date==lubridate::ymd(date)
-      ) -> courseSelected
+    purrr::keep(response_content, ~{.x$date==lubridate::ymd(date)}) ->
+      courseSelected
   } else {
-    learningMaterial[number, ] -> courseSelected
+    response_content[number] -> courseSelected
   }
 
   dataToFile(courseSelected, destfolder, openUrl)
 }
 
 browseCourseUrl <- function(number=NULL, date=NULL){
+  httr::GET(
+    url="https://emajortaiwan.github.io/home/course_info/courseList.json"
+  ) -> response
+  httr::content(response) -> response_content
+
   if(is.null(number)){
-    learningMaterial %>%
-      filter(
-        date==lubridate::ymd(date)
-      )-> courseSelected
+    purrr::keep(response_content, ~{.x$date==lubridate::ymd(date)}) ->
+      courseSelected
   } else {
-    learningMaterial[number, ]-> courseSelected
+    response_content[number] -> courseSelected
   }
 
-  browseURL(courseSelected$url[[1]])
+  oneCourse <- courseSelected[[1]]
+  if(oneCourse$onlineUrl !="" && openUrl){
+    url0 <- oneCourse$onlineUrl
+    sessionInfo() -> info
+    if(stringr::str_detect(info$running,"[mM][aA][cC]")){
+      system(glue::glue('open -a "Google Chrome" {url0}'))
+    } else {
+      browseURL(url0)
+    }
+  }
 }
 
 #' generate EMajor learning service
@@ -210,32 +232,55 @@ textToData = function(filename){
 # courseSelected <- get_courseMaterial(1)
 # destfolder=getwd()
 dataToFile = function(courseSelected, destfolder, openUrl){
-  for(.x in seq_along(courseSelected$filename)){
-    courseSelected$filename[[.x]] -> filename
+  oneCourse <- courseSelected[[1]]
+  for(.x in seq_along(oneCourse$downloadUrl)){
+    link <- oneCourse$downloadUrl[[.x]]$link
+    filename <- URLdecode(stringr::str_extract(basename(link),"[:graph:]+(?=\\?)"))
+    finalDestPath = file.path(destfolder,"course_material")
+    dir.create(
+      finalDestPath,
+      recursive = T
+    )
+    filenamePath=file.path(finalDestPath,filename)
 
-    stringr::str_remove(filename,"\\.[:alnum:]+$") -> dataName
-    dataObj <- rlang::sym(dataName)
-    rlang::expr(
-      {
-        writeLines(
-          !!dataObj,
-          file.path(destfolder,filename)
-        )
+    download.file(
+      link,
+      filenamePath
+    )
+    if(oneCourse$downloadUrl[[.x]]$zip){
+      unzip(
+        filenamePath,
+        exdir=finalDestPath
+      )
+    }
+    unlink(
+      filenamePath
+    )
+    message(
+      "Course materials are in\n",
+      finalDestPath
+    )
+    rstudioapi::selectFile(
+      caption="Select a file to open:",
+      path=finalDestPath)
+
+    if(oneCourse$onlineUrl !="" && openUrl){
+      url0 <- oneCourse$onlineUrl
+      sessionInfo() -> info
+      if(stringr::str_detect(info$running,"[mM][aA][cC]")){
+        system(glue::glue('open -a "Google Chrome" {url0}'))
+      } else {
+        browseURL(url0)
       }
-    ) -> todo
-    rlang::eval_tidy(
-      todo
-    )
-    savedfile <- file.path(destfolder,filename)
-    cat("Learning materials saved at \n",
-        savedfile,"\n")
-    file.edit(
-      savedfile
-    )
-    if(courseSelected$url[[.x]] !="" && openUrl){
-      browseURL(courseSelected$url[[.x]])
     }
 
   }
 
 }
+
+get_courseListJson <- function(){
+    httr::GET("https://emajortaiwan.github.io/home/course_info/courseList.json")-> response
+    httr::content(response) -> courseList
+    courseList
+  }
+
