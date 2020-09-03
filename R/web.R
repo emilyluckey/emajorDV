@@ -42,19 +42,29 @@ create_jqueryPage <- function(){
 #'
 #' @examples none
 serveTheLastModified <- function(path="."){
-  rootPath <- normalizePath(".")
-  if(length(servr::daemon_list())==0){
-    servr::httd()
+  if(length(servr::daemon_list())!=0){
+    servr::daemon_stop()
   }
-  servr::server_config() -> sconfig
-  sconfig$host -> host
-  sconfig$port -> port
-  list.files(path=path,pattern=".html$", full.names = T) -> allHtmls
-  file.info(allHtmls) -> allHtmlsInfo
-  with(allHtmlsInfo, which(mtime==max(mtime)))-> loc_theLatest
-  stringr::str_remove(allHtmls[[loc_theLatest]],
-                      glue::glue("^(.|{rootPath})")) -> html2open
-  paste0("http://", host,":",port,html2open) -> url0
+  rootPath <- normalizePath(".")
+  sconfig <- servr::server_config()
+  host <- sconfig$host
+  port <- sconfig$port
+  allHtmls <- list.files(path = path, pattern = ".html$",
+                         full.names = T)
+  allHtmlsInfo <- file.info(allHtmls)
+  loc_theLatest <- with(allHtmlsInfo, which(mtime == max(mtime)))
+  html2open <- stringr::str_remove(
+    allHtmls[[loc_theLatest]],
+    glue::glue("^(\\.|{rootPath})"))
+  url0 <- paste0("http://", host, ":", port, html2open)
+
+  if (length(servr::daemon_list()) == 0) {
+    servr::httd(
+      dir=rootPath,
+      port=port
+    )
+  }
+
   browseURL(url0)
 }
 #' Add JS html to the end of body to the latest modified html

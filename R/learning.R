@@ -255,10 +255,10 @@ dataToFile = function(courseSelected, destfolder, openUrl){
         filenamePath,
         exdir=finalDestPath
       )
+      unlink(
+        filenamePath
+      )
     }
-    unlink(
-      filenamePath
-    )
     message(
       "Course materials are in\n",
       finalDestPath
