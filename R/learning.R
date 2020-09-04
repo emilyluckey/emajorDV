@@ -236,50 +236,61 @@ textToData = function(filename){
 # destfolder=getwd()
 dataToFile = function(courseSelected, destfolder, openUrl){
   oneCourse <- courseSelected[[1]]
-  for(.x in seq_along(oneCourse$downloadUrl)){
-    link <- oneCourse$downloadUrl[[.x]]$link
-    filename <- URLdecode(stringr::str_extract(basename(link),"[:graph:]+(?=\\?)"))
-    finalDestPath = file.path(destfolder,"course_material")
-    dir.create(
-      finalDestPath,
-      recursive = T
-    )
-    filenamePath=file.path(finalDestPath,filename)
-
-    download.file(
-      link,
-      filenamePath
-    )
-    if(oneCourse$downloadUrl[[.x]]$zip){
-      unzip(
-        filenamePath,
-        exdir=finalDestPath
+  if(length(oneCourse$downloadUrl)!=0){
+    for(.x in seq_along(oneCourse$downloadUrl)){
+      link <- oneCourse$downloadUrl[[.x]]$link
+      filename <- URLdecode(stringr::str_extract(basename(link),"[:graph:]+(?=\\?)"))
+      finalDestPath = file.path(destfolder,"course_material")
+      dir.create(
+        finalDestPath,
+        recursive = T
       )
-      unlink(
+      filenamePath=file.path(finalDestPath,filename)
+
+      download.file(
+        link,
         filenamePath
       )
-    }
-    message(
-      "Course materials are in\n",
-      finalDestPath
-    )
-    rstudioapi::selectFile(
-      caption="Select a file to open:",
-      path=finalDestPath) -> fileSelected
-    file.edit(fileSelected)
-
-    if(oneCourse$onlineUrl !="" && openUrl){
-      url0 <- oneCourse$onlineUrl
-      sessionInfo() -> info
-      if(stringr::str_detect(info$running,"[mM][aA][cC]")){
-        system(glue::glue('open -a "Google Chrome" {url0}'))
-      } else {
-        browseURL(url0)
+      if(oneCourse$downloadUrl[[.x]]$zip){
+        unzip(
+          filenamePath,
+          exdir=finalDestPath
+        )
+        unlink(
+          filenamePath
+        )
       }
+      message(
+        "Course materials are in\n",
+        finalDestPath
+      )
+      rstudioapi::selectFile(
+        caption="Select a file to open:",
+        path=finalDestPath) -> fileSelected
+      file.edit(fileSelected)
+
+
     }
+
+
 
   }
 
+  if(length(oneCourse$onlineUrl)!=0){
+    for(.x in seq_along(oneCourse$onlineUrl)){
+
+      if(oneCourse$onlineUrl[[.x]] !="" && openUrl){
+        url0 <- oneCourse$onlineUrl[[.x]]
+        sessionInfo() -> info
+        if(stringr::str_detect(info$running,"[mM][aA][cC]")){
+          system(glue::glue('open -a "Google Chrome" {url0}'))
+        } else {
+          browseURL(url0)
+        }
+      }
+
+    }
+  }
 }
 
 get_courseListJson <- function(){
