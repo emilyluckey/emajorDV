@@ -1,4 +1,35 @@
 ###
+#' Purl active Rmd into a drake plan R script, named "plan_{activeRmdName}.R", then make the plan.
+#'
+#' @return
+#' @export
+#'
+#' @examples purlActiveRmd_thenPlanMake()
+purlActiveRmd_thenPlanMake <- function(){
+  rstudioapi::getSourceEditorContext() -> activeSource
+  activeSource$path -> activeRmd
+  # normalizePath(activeRmd) -> activeRmd
+  # stringr::str_remove(activeRmd, rootPath) ->
+  #   html2open
+  webDirRoot <- dirname(activeRmd)
+  activeRmdBase <- basename(activeRmd)
+  drakePlanname <-
+    paste0("plan_",
+           stringr::str_remove(activeRmdBase,"\\.[rR][mM][dD]$"))
+  purl_drakePlan(activeRmd, drakePlanname)
+  drakefilename <-
+    file.path(
+      webDirRoot,paste0(drakePlanname,".R")
+    )
+  source(drakefilename)
+  makeName <-
+    paste0(
+      "mk_",drakePlanname
+    )
+  do.call(makeName, list())
+
+}
+
 #' Purl Rmd to a drake plan R script
 #'
 #' @description All R chunks with chunk names without drake=F will be purled to
@@ -132,7 +163,8 @@ purl_drakePlan <- function(filename, plan_name){
       "",
       makecondition,
       "",
-      "  drake::make({plan_name})",
+      "mkEnv=current_env()",
+      "  drake::make({plan_name}, envir=mkEnv)",
       "}",
       ""
     )

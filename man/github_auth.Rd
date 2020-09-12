@@ -12,3 +12,6 @@ github_auth()
 \description{
 Github authentication
 }
+\examples{
+none
+}

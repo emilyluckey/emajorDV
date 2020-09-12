@@ -5,7 +5,7 @@ library(httpuv)
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples none
 github_auth <- function(){
   httr::oauth2.0_token(
     httr::oauth_endpoints("github"),
